@@ -1,0 +1,15 @@
+{
+  // Suprime avisos do analisador CSS sobre diretivas @tailwind/@apply/etc.
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
+
+  // Ajuda a extensão Tailwind CSS IntelliSense a reconhecer classes em arquivos TS/JS/TSX/JSX
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "html",
+    "javascript": "javascript",
+    "javascriptreact": "javascript",
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  }
+}
