@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+
 interface ModernCardProps {
   title: string;
   href?: string;
@@ -23,7 +24,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
   overflow: 'hidden',
   cursor: 'pointer',
-  maxHeight: '90px',
+  maxHeight: '100px',
   willChange: 'transform',
   transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
   '&::before': {
@@ -74,9 +75,9 @@ const LogoContainer = styled(Box)({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  margin: '0 auto 8px',
+  margin: '0 auto 14px',
   borderRadius: '12px',
-  padding: '0',
+  padding: '0 4px',
   '& img': {
     width: '60px',
     height: '60px',
@@ -86,8 +87,8 @@ const LogoContainer = styled(Box)({
     willChange: 'filter',
   },
   '& svg': {
-    width: '60px',
-    height: '60px',
+    width: '50px',
+    height: '50px',
     filter: 'grayscale(100%) opacity(0.4)',
     transition: 'filter 0.2s ease',
     willChange: 'filter',
@@ -103,6 +104,8 @@ const ModernCard: React.FC<ModernCardProps> = ({ title, href, logo, icon, delay 
     }
   };
 
+
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -115,7 +118,7 @@ const ModernCard: React.FC<ModernCardProps> = ({ title, href, logo, icon, delay 
     >
       <StyledCard onClick={handleClick}>
         <GlowEffect className="glow-effect" />
-        <CardContent sx={{ position: 'relative', zIndex: 2, padding: '12px' }}>
+        <CardContent sx={{ position: 'relative', zIndex: 2, padding: '10px' }}>
           {logo && (
             <LogoContainer>
               <img 
