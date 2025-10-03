@@ -46,18 +46,42 @@ export default function AtalhosPage() {
   }
 
   const shortcuts = [
-    { label: 'Ramais', href: '#', logo: null, icon: <Phone sx={{ fontSize: 32, color: '#FF0000' }} /> },
-    { label: 'FAQ', href: '#', logo: null, icon: <HelpOutline sx={{ fontSize: 32, color: '#fb923c' }} /> },
-    { label: 'CODI', href: '#', logo: '/Logos/Codi-logo.png', icon: null },
-    { label: 'Portal AMIL', href: '#', logo: '/Logos/amil.png', icon: null },
-    { label: 'TOTVS Produção', href: '#', logo: '/Logos/totvs_logo.png', icon: null },
-    { label: 'TOTVS Teste', href: '#', logo: '/Logos/totvs_logo.png', icon: null },
-    { label: 'Portal RH', href: '#', logo: '/Logos/Meu RH.png', icon: null },
-    { label: 'Fusion Produção', href: '#', logo: '/Logos/Fusion.png', icon: null },
-    { label: 'Fusion Teste', href: '#', logo: '/Logos/Fusion.png', icon: null },
-    { label: 'Mercos', href: '#', logo: '/Logos/mercos.png', icon: null },
-    { label: 'WMS Produção', href: '#', logo: '/Logos/WMS.png', icon: null },
-    { label: 'WMS Teste', href: '#', logo: '/Logos/WMS.png', icon: null },
+    { label: 'Ramais', href: 'http://194.0.0.114:8080/Agenda/', 
+      logo: null, icon: <Phone sx={{ fontSize: 32, color: '#FF0000' }} /> },
+
+    { label: 'FAQ', href: 'http://194.0.0.114:8080/Faq', 
+      logo: null, icon: <HelpOutline sx={{ fontSize: 32, color: '#fb923c' }} /> },
+
+    { label: 'CODI', href: 'http://194.0.0.170:8080/auth/authorize', 
+      logo: '/Logos/Codi-logo.svg', icon: null },
+
+    { label: 'Portal AMIL', href: 'https://www.amil.com.br/beneficiario/#/', 
+      logo: '/Logos/amil.svg', icon: null },
+
+    { label: 'TOTVS Produção', href: 'http://wk2022a:8080/totvs-login/loginForm', 
+      logo: '/Logos/totvs_logo.svg', icon: null },
+
+    { label: 'TOTVS Teste', href: 'http://wk2022a:8180/totvs-login/loginForm', 
+      logo: '/Logos/totvs_logo.svg', icon: null },
+
+    { label: 'Portal RH', href: 'https://companhiade145352.rm.cloudtotvs.com.br/Corpore.Net/Login.aspx', 
+      logo: '/Logos/Meu RH.svg', icon: null },
+
+    { label: 'Fusion Produção', href: 'https://fusion.compactor.com.br/fusion/portal', 
+      logo: '/Logos/Fusion.svg', icon: null },
+
+    { label: 'Fusion Teste', href: 'https://hml.compactor.com.br/fusion/portal/action/Login/view/normal', 
+      logo: '/Logos/Fusion.svg', icon: null },
+
+    { label: 'Mercos', href: 'https://app.mercos.com/login/', 
+      logo: '/Logos/mercos.svg', icon: null },
+
+    { label: 'WMS Produção', href: '#', 
+      logo: '/Logos/WMS.svg', icon: null },
+
+    { label: 'WMS Teste', href: '#', 
+      logo: '/Logos/WMS.svg', icon: null },
+
   ];
 
   // 🔹 Filtragem
@@ -150,7 +174,7 @@ export default function AtalhosPage() {
                 target="_blank"
               >
                 <img
-                  src="/Logos/Logo Compactor.png"
+                  src="/Logos/Logo Compactor.svg"
                   alt="Compactor"
                   style={{
                     height: '40px',
