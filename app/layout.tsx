@@ -1,16 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+// Import fonts via fontsource so the bundler includes them correctly
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/700.css';
+import '@fontsource/fira-mono/400.css';
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Atalhos Compactor",
@@ -31,9 +24,7 @@ export default function RootLayout({
       <meta name="msapplication-TileColor" content="#da532c"></meta>
       <meta name="theme-color" content="#ffffff"></meta>
       </head>
-              <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-              >
+              <body className="antialiased">
                 {children}
               </body>
             </html>

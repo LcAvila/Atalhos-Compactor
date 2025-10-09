@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { isSafeUrl, safeOpen } from '../../lib/safeOpen';
 import { motion } from 'framer-motion';
 import { Card, CardContent, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -100,7 +101,11 @@ const ModernCard: React.FC<ModernCardProps> = ({ title, href, logo, icon, delay 
     if (onClick) {
       onClick();
     } else if (href) {
-      window.open(href, '_blank');
+      if (!isSafeUrl(href)) {
+        console.warn('Attempted to open unsafe href from ModernCard:', href);
+        return;
+      }
+      safeOpen(href);
     }
   };
 

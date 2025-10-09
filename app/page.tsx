@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { isSafeUrl, safeOpen } from '../lib/safeOpen';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import { Container, Box, Typography, TextField, InputAdornment } from '@mui/material';
 import { Search, AccessTime, Computer, Phone, HelpOutline } from '@mui/icons-material';
 import ModernCard from './components/ModernCard';
+import TutorialModal from './components/TutorialModal';
 import FloatingParticles from './components/FloatingParticles';
 import AnimatedBackground from './components/AnimatedBackground';
 import RadioButtons from './components/RadioButtons';
@@ -13,6 +15,138 @@ import RadioButtons from './components/RadioButtons';
 export default function AtalhosPage() {
   const [time, setTime] = useState('00:00:00');
   const [ambiente, setAmbiente] = useState<'producao' | 'homologacao'>('producao');
+  const [tutorialOpen, setTutorialOpen] = useState(false);
+  const [tutorialImages, setTutorialImages] = useState<string[]>([]);
+  const [tutorialSteps, setTutorialSteps] = useState<Array<{ src: string; caption?: string }>>([]);
+  const [tutorialTitle, setTutorialTitle] = useState<string>('');
+  const [tutorialFileName, setTutorialFileName] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [lastDownloadType, setLastDownloadType] = useState<'producao' | 'teste' | null>(null);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
+  // ...existing state
+
+  async function downloadWms(type: 'producao' | 'teste') {
+    setDownloading(true);
+    setDownloadProgress(0);
+    setDownloadError(null);
+    try {
+  const filename = type === 'producao' ? 'WMS_PROD.jnlp' : 'WMS_TESTE.jnlp';
+  // Force use of Next's internal download API to serve files from the app's download/ folder
+  // This avoids proxying to legacy backend (/baixar) which may be down in local dev.
+  const useNext = true;
+  let url = useNext ? `/api/download/wms/${filename}` : `/baixar/${filename}`;
+      const headers: Record<string, string> = {};
+      if (process.env.NEXT_PUBLIC_DOWNLOAD_TOKEN) {
+        headers['Authorization'] = `Bearer ${process.env.NEXT_PUBLIC_DOWNLOAD_TOKEN}`;
+      }
+      // If using Next's server download, request a signed URL first (recommended)
+      if (useNext) {
+        try {
+          const signResp = await fetch('/api/download/sign', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ file: filename }),
+          });
+          if (signResp.ok) {
+            const j = await signResp.json();
+            if (j.url) url = j.url;
+          } else {
+            console.warn('Could not obtain signed URL, falling back to direct API');
+          }
+        } catch (e) {
+          console.warn('Signing request failed', e);
+        }
+      }
+      const resp = await fetch(url, { method: 'GET', headers });
+      if (!resp.ok) {
+        const text = await resp.text().catch(() => '');
+        const msg = `Servidor retornou ${resp.status} ${resp.statusText}. ${text}`;
+        setDownloadError(msg);
+        setDownloading(false);
+        setDownloadProgress(null);
+        return;
+      }
+
+      const contentLength = resp.headers.get('Content-Length');
+      const total = contentLength ? parseInt(contentLength, 10) : NaN;
+
+      if (!resp.body) {
+        // Fallback: no streaming
+        const blob = await resp.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+        setDownloading(false);
+        setDownloadProgress(100);
+        return;
+      }
+
+      const reader = resp.body.getReader();
+      const chunks: Uint8Array[] = [];
+      let received = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+          chunks.push(value);
+          received += value.length;
+          if (!Number.isNaN(total)) {
+            setDownloadProgress((received / total) * 100);
+          } else {
+            setDownloadProgress(null);
+          }
+        }
+      }
+
+  // chunks is Uint8Array[]; cast to any for Blob constructor to avoid TS mismatch
+  const blob = new Blob(chunks as any);
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+      setDownloading(false);
+      setDownloadProgress(100);
+      setDownloadSuccess(true);
+    } catch (e) {
+      console.error('Failed to download WMS file', e);
+      setDownloadError(String(e));
+      setDownloading(false);
+      setDownloadProgress(null);
+    }
+  }
+
+  function handleWmsClick(type: 'producao' | 'teste') {
+    // Show tutorial modal with appropriate images then trigger download
+    const base = '/assets/avisos';
+    if (type === 'producao') {
+      setTutorialTitle('WMS - Produção: como baixar');
+      setTutorialSteps([
+        { src: `${base}/WMS_PROD.png`, caption: 'Passo 1: Acesse o painel WMS' },
+        { src: `${base}/WMS.png`, caption: 'Passo 2: Clique em "Download"' },
+      ]);
+    } else {
+      setTutorialTitle('WMS - Teste: como baixar');
+      setTutorialSteps([
+        { src: `${base}/WMS_TESTE.png`, caption: 'Passo 1: Acesse o ambiente de testes' },
+        { src: `${base}/WMS.png`, caption: 'Passo 2: Localize o arquivo e baixe' },
+      ]);
+    }
+  setTutorialOpen(true);
+  setLastDownloadType(type);
+  setTutorialFileName(type === 'producao' ? 'WMS_PROD.jnlp' : 'WMS_TESTE.jnlp');
+  // Start download immediately while the modal is shown (simultaneous behavior)
+  // fire-and-forget so modal appears without waiting for download to finish
+  void downloadWms(type);
+  }
 
   useEffect(() => {
     function updateClock() {
@@ -42,7 +176,7 @@ export default function AtalhosPage() {
     }
 
     const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(q)}`;
-    window.open(searchUrl, '_blank');
+    if (isSafeUrl(searchUrl)) safeOpen(searchUrl);
   }
 
   const shortcuts = [
@@ -77,10 +211,10 @@ export default function AtalhosPage() {
       logo: '/Logos/mercos.svg', icon: null },
 
     { label: 'WMS Produção', href: '#', 
-      logo: '/Logos/WMS.svg', icon: null },
+      logo: '/Logos/WMS.svg', icon: null, onClick: () => handleWmsClick('producao') },
 
     { label: 'WMS Teste', href: '#', 
-      logo: '/Logos/WMS.svg', icon: null },
+      logo: '/Logos/WMS.svg', icon: null, onClick: () => handleWmsClick('teste') },
 
   ];
 
@@ -172,6 +306,7 @@ export default function AtalhosPage() {
               <a
                 href="https://www.compactorstore.com.br/?gad_source=1&gad_campaignid=21162174469&gbraid=0AAAAA9Y1fBISe-z9M3TxOTHN9ppD9NtIj&gclid=CjwKCAjwxfjGBhAUEiwAKWPwDvYL6J84tpif0ieAt_7U1QV-w_BcM3Zmwqjguh9J-78pqRYhuBekSxoCI08QAvD_BwE"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 <img
                   src="/Logos/Logo Compactor.svg"
@@ -340,6 +475,7 @@ export default function AtalhosPage() {
                     logo={shortcut.logo || undefined}
                     icon={shortcut.icon || undefined}
                     delay={index * 0.05}
+                    onClick={shortcut.onClick}
                   />
                 ))}
               </Box>
@@ -347,6 +483,30 @@ export default function AtalhosPage() {
           </Box>
         </Container>
       </Box>
+      <TutorialModal
+        open={tutorialOpen}
+        onClose={() => {
+          setTutorialOpen(false);
+          setDownloading(false);
+          setDownloadProgress(null);
+          setDownloadError(null);
+          setDownloadSuccess(false);
+        }}
+        title={tutorialTitle}
+        steps={tutorialSteps}
+        downloading={downloading}
+        progress={downloadProgress}
+        error={downloadError}
+        success={downloadSuccess}
+        onRetry={() => {
+          if (lastDownloadType) downloadWms(lastDownloadType);
+        }}
+        onDownload={() => {
+          if (lastDownloadType) downloadWms(lastDownloadType);
+        }}
+        fileName={tutorialFileName || undefined}
+      />
+      {/* System modal removed per user request */}
     </>
   );
 }

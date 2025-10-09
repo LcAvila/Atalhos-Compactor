@@ -5,11 +5,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test:sign": "node tests/sign.test.js",
+    "security:check": "npm audit --audit-level=moderate --json > audit-output.json || true"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+  "@fontsource/fira-mono": "^4.5.10",
+  "@fontsource/inter": "^4.5.10",
+  "@fontsource/poppins": "^4.5.10",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
     "@types/styled-components": "^5.1.34",
