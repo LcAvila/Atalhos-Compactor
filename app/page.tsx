@@ -33,15 +33,14 @@ export default function AtalhosPage() {
     setDownloadError(null);
     try {
   const filename = type === 'producao' ? 'WMS_PROD.jnlp' : 'WMS_TESTE.jnlp';
-  // Force use of Next's internal download API to serve files from the app's download/ folder
-  // This avoids proxying to legacy backend (/baixar) which may be down in local dev.
+  
   const useNext = true;
   let url = useNext ? `/api/download/wms/${filename}` : `/baixar/${filename}`;
       const headers: Record<string, string> = {};
       if (process.env.NEXT_PUBLIC_DOWNLOAD_TOKEN) {
         headers['Authorization'] = `Bearer ${process.env.NEXT_PUBLIC_DOWNLOAD_TOKEN}`;
       }
-      // If using Next's server download, request a signed URL first (recommended)
+      
       if (useNext) {
         try {
           const signResp = await fetch('/api/download/sign', {
@@ -73,7 +72,7 @@ export default function AtalhosPage() {
       const total = contentLength ? parseInt(contentLength, 10) : NaN;
 
       if (!resp.body) {
-        // Fallback: no streaming
+       
         const blob = await resp.blob();
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
@@ -104,7 +103,6 @@ export default function AtalhosPage() {
         }
       }
 
-  // chunks is Uint8Array[]; cast to any for Blob constructor to avoid TS mismatch
   const blob = new Blob(chunks as any);
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -125,7 +123,6 @@ export default function AtalhosPage() {
   }
 
   function handleWmsClick(type: 'producao' | 'teste') {
-    // Show tutorial modal with appropriate images then trigger download
     const base = '/assets/avisos';
     if (type === 'producao') {
       setTutorialTitle('WMS - Produção: como baixar');
@@ -143,8 +140,7 @@ export default function AtalhosPage() {
   setTutorialOpen(true);
   setLastDownloadType(type);
   setTutorialFileName(type === 'producao' ? 'WMS_PROD.jnlp' : 'WMS_TESTE.jnlp');
-  // Start download immediately while the modal is shown (simultaneous behavior)
-  // fire-and-forget so modal appears without waiting for download to finish
+  
   void downloadWms(type);
   }
 
@@ -218,7 +214,6 @@ export default function AtalhosPage() {
 
   ];
 
-  // 🔹 Filtragem
   const filteredShortcuts = ambiente === 'homologacao'
     ? shortcuts.filter(s => s.label.includes('Teste'))
     : shortcuts.filter(s => !s.label.includes('Teste'));
