@@ -13,7 +13,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
   "@fontsource/fira-mono": "^4.5.10",
-  "@fontsource/inter": "^4.5.10",
+  "@fontsource/inter": "^5.2.8",
   "@fontsource/poppins": "^4.5.10",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
