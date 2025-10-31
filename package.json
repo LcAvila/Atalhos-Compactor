@@ -15,7 +15,7 @@
   "@fontsource/fira-mono": "^4.5.10",
   "@fontsource/inter": "^4.5.10",
   "@fontsource/poppins": "^4.5.10",
-    "@mui/icons-material": "^7.3.2",
+    "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.2",
     "@types/styled-components": "^5.1.34",
     "framer-motion": "^12.23.22",
